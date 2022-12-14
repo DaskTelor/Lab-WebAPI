@@ -7,7 +7,7 @@
     <RootNamespace>Lab_WebAPI</RootNamespace>
     <Version>0.0.3-rc.1</Version>
     <Authors>A.Sharapov L.Moiseev</Authors>
-    <Company>not stark industries</Company>
+    <Company>nstu-ap-926</Company>
     <Product>WEB-API</Product>
     <PackageId>MyApp</PackageId>
     <FileVersion>0.0.1</FileVersion>
