@@ -1,4 +1,5 @@
 ﻿using Lab_WebAPI.Models;
+using Lab_WebAPI.Storage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab_WebAPI.Controllers
@@ -7,44 +8,63 @@ namespace Lab_WebAPI.Controllers
     [Route("api/[controller]")]
     public class PersonalComputerController : ControllerBase
     {
-        private static List<PersonalComputerData> _memCache = new List<PersonalComputerData>();
+        private static IStorage<PersonalComputerData> _memCache = new MemCache();
 
         [HttpGet]
         public ActionResult<IEnumerable<PersonalComputerData>> Get()
         {
-            return _memCache;
+            return Ok(_memCache.All);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<PersonalComputerData> Get(int id)
+        public ActionResult<PersonalComputerData> Get(Guid id)
         {
-            if (_memCache.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
+            if (!_memCache.Has(id)) return NotFound("No such");
 
-            return _memCache[id];
+            return Ok(_memCache[id]);
         }
 
         [HttpPost]
-        public void Post([FromBody] PersonalComputerData value)
+        public IActionResult Post([FromBody] PersonalComputerData value)
         {
+            var validationResult = value.Validate();
+
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
             _memCache.Add(value);
+
+            return Ok($"{value.ToString()} has been added");
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] PersonalComputerData value)
+        public IActionResult Put(Guid id, [FromBody] PersonalComputerData value)
         {
-            if (_memCache.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
+            if (!_memCache.Has(id)) return NotFound("No such");
 
+            var validationResult = value.Validate();
+
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
+
+            var previousValue = _memCache[id];
             _memCache[id] = value;
+
+            return Ok($"{previousValue.ToString()} has been updated to {value.ToString()}");
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(Guid id)
         {
+            if (!_memCache.Has(id)) return NotFound("No such");
 
-            if (_memCache.Count <= id) throw new IndexOutOfRangeException("Нет такого у нас");
-
+            var valueToRemove = _memCache[id];
             _memCache.RemoveAt(id);
+
+            return Ok($"{valueToRemove.ToString()} has been removed");
         }
+
+
+
+
     }
 
 }
