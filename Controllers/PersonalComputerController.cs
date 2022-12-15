@@ -8,7 +8,12 @@ namespace Lab_WebAPI.Controllers
     [Route("api/[controller]")]
     public class PersonalComputerController : ControllerBase
     {
-        private static IStorage<PersonalComputerData> _memCache = new MemCache();
+        private IStorage<PersonalComputerData> _memCache;
+        public PersonalComputerController(IStorage<PersonalComputerData> memCache)
+        {
+            _memCache = memCache;
+        }
+
 
         [HttpGet]
         public ActionResult<IEnumerable<PersonalComputerData>> Get()

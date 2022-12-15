@@ -1,24 +1,17 @@
+using Microsoft.AspNetCore;
+
 namespace Lab_WebAPI
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .UseStartup<Startup>();
     }
 }
